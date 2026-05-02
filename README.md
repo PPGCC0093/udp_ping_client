@@ -1,24 +1,36 @@
 # UDP Ping Client
 
-A simple UDP ping client written in Python. The script sends 10 UDP packets to a
-server, waits up to 1 second for each response, then prints packet loss and RTT
-statistics.
+A small Python UDP ping client for measuring round-trip time and packet loss
+against a UDP echo server.
+
+The current entrypoint is `server.py`. Despite the filename, it acts as the
+client: it sends 10 UDP packets, waits up to 1 second for each response, and
+prints basic statistics at the end.
 
 ## Requirements
 
-- Python 3.13 or compatible Python 3 version
+- Python 3.13 or newer
 - A UDP server listening on `127.0.0.1:12000`
-- Docker, if you want to run the client in a container
+- Docker, optional
+- uv, optional
 
-## Running Locally
+This project has no third-party Python dependencies.
 
-Start your UDP server first, then run:
+## Run Locally
+
+Start your UDP server first, then run the client:
 
 ```bash
 python server.py
 ```
 
-The client sends messages in this format:
+If you use uv:
+
+```bash
+uv run python server.py
+```
+
+The client sends these messages:
 
 ```text
 ping 1
@@ -27,10 +39,10 @@ ping 2
 ping 10
 ```
 
-For each received response, it prints the response text and round-trip time.
-Timeouts are reported as lost packets.
+Each successful response prints the response text and RTT in milliseconds.
+Timeouts are counted as lost packets.
 
-## Running With Docker
+## Run With Docker
 
 Build the image:
 
@@ -38,39 +50,47 @@ Build the image:
 docker build -t udp-ping-client .
 ```
 
-Run the container:
+Run the image:
 
 ```bash
 docker run --rm udp-ping-client
 ```
 
-Because the script connects to `127.0.0.1`, Docker users usually need host
-networking when the UDP server is running on the host machine:
+When the UDP server is running on the host machine, use host networking on
+Linux so `127.0.0.1` resolves to the host network namespace:
 
 ```bash
 docker run --rm --network host udp-ping-client
 ```
 
-Host networking is supported on Linux. On Docker Desktop, change `SERVER_HOST`
-in `server.py` to the appropriate host address, such as `host.docker.internal`.
+On Docker Desktop, host networking may not behave the same way. In that case,
+change `SERVER_HOST` in `server.py` to the correct host address, commonly
+`host.docker.internal`.
 
 ## Configuration
 
-The connection settings are defined at the top of `server.py`:
+Connection settings are defined near the top of `server.py`:
 
 ```python
 SERVER_HOST = "127.0.0.1"
 SERVER_PORT = 12000
 ```
 
-Edit those values if your UDP server is running on a different host or port.
+Update these values if your UDP server uses a different host or port.
 
 ## Output
 
-At the end of the run, the client prints:
+After all packets are sent, the client prints:
 
 - packets sent
 - packets received
 - packets lost
 - packet loss percentage
-- average RTT, when at least one response is received
+- average RTT, if at least one response was received
+
+## Docker Image Workflow
+
+The repository includes a GitHub Actions workflow at
+`.github/workflows/docker-image.yml`. It builds the Docker image on pull
+requests and publishes signed images to GitHub Container Registry for configured
+branches and tags.
