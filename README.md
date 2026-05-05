@@ -3,7 +3,7 @@
 A small Python UDP ping client for measuring round-trip time and packet loss
 against a UDP echo server.
 
-The current entrypoint is `server.py`. Despite the filename, it acts as the
+The current entrypoint is `udp_ping_clien.py`. Despite the filename, it acts as the
 client: it sends 10 UDP packets, waits up to 1 second for each response, and
 prints basic statistics at the end.
 
@@ -21,13 +21,13 @@ This project has no third-party Python dependencies.
 Start your UDP server first, then run the client:
 
 ```bash
-python server.py
+python udp_ping_clien.py
 ```
 
 If you use uv:
 
 ```bash
-uv run python server.py
+uv run python udp_ping_clien.py
 ```
 
 The client sends these messages:
@@ -64,12 +64,12 @@ docker run --rm --network host udp-ping-client
 ```
 
 On Docker Desktop, host networking may not behave the same way. In that case,
-change `SERVER_HOST` in `server.py` to the correct host address, commonly
+change `SERVER_HOST` in `udp_ping_clien.py` to the correct host address, commonly
 `host.docker.internal`.
 
 ## Configuration
 
-Connection settings are defined near the top of `server.py`:
+Connection settings are defined near the top of `udp_ping_clien.py`:
 
 ```python
 SERVER_HOST = "127.0.0.1"
