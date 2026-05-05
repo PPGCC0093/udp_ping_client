@@ -2,6 +2,6 @@ FROM python:3.13-slim
 
 WORKDIR /app
 
-COPY server.py .
+COPY udp_ping_clien.py .
 
-CMD ["python", "server.py"]
+CMD ["python", "udp_ping_clien.py"]
